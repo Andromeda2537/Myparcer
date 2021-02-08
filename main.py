@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
-from multiprocessing import Pool
+import os
+# from multiprocessing import Pool
 
 
 def get_url(url):
@@ -9,17 +10,27 @@ def get_url(url):
     return response.text
 
 
-def all_links_on_models(html):
-    """links to all models"""
+def find_all_links(html):
+    """links to all products"""
     soup = BeautifulSoup(html, 'lxml')
-    links = soup.find('div', class_="js_wrapper_items")
-    return links
+    links = soup.find_all('a', class_="thumb shine")
+    all_scr = []
+    for link in links:
+        scr = link.find('img').get('src')
+        a = 'https://gastronomia.by' + scr
+        all_scr.append(a)
+    return all_scr
 
 
-def find_all(html):
-    soup = BeautifulSoup(html, 'lxml')
-    linkss = soup.find('a', class_="thumb shine").get('href')
-    return linkss
+def save_pictures(all_scr):
+    images_path = 'images'
+    if not os.path.exists(images_path):
+        os.makedirs(images_path)
+    with open(images_path + "/gastronomia.jpg", 'ab+') as f:
+        for i in all_scr:
+            jpg = requests.get(i).content
+            f.write(jpg)
+    return
 
 
-print(find_all(get_url('https://gastronomia.by/catalog/svezhaya_vypechka/khleb')))
+print(save_pictures(find_all_links(get_url('https://gastronomia.by/catalog/svezhaya_vypechka/khleb'))))
