@@ -18,5 +18,6 @@ def creating_directories(directory_name):
 
 
 def file_name_creation(src):
+    """Creates a filename using the last element from a string"""
     file_name = src.split('/')[-1]
     return file_name
