@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+from parser import saver
 
 
 def get_url(url):
@@ -9,8 +10,10 @@ def get_url(url):
 
 
 def catalog(html, first_tag, second_tag, what_to_take, address, class_="menu-item"):
-    """gets an html document as an argument,
-     returns all links to products in the catalog"""
+    """As an argument, it takes the necessary parameters for searching the soup:
+    html text, tag and identifier, a tag for searching by the selected tag and
+     an indication of the element to be removed,
+      the resource address. returns a list of all products from the catalog"""
     soup = BeautifulSoup(html, 'lxml')
     store_catalog = soup.find_all(first_tag, class_)
     all_product_links = []
@@ -21,6 +24,7 @@ def catalog(html, first_tag, second_tag, what_to_take, address, class_="menu-ite
     return all_product_links
 
 
-html_text = get_url('https://gastronomia.by')
-result = catalog(html_text, 'li', 'a', 'href', 'https://gastronomia.by')
-print(result)
+if __name__ == '__main__':
+    html_text = get_url('https://gastronomia.by')
+    all_product = catalog(html_text, 'li', 'a', 'href', 'https://gastronomia.by')
+    result = saver(all_product)
