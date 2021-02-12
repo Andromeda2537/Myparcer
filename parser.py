@@ -1,32 +1,26 @@
 import time
 import random
-from creating_directory import name_for_directory, creating_directories, file_name_creation
-from funk import get_url
-from funk import catalog
+from creating_name import get_name_directory, get_file_name
+from creating_directory import directory_creation
+from get_links_on_product import get_url, get_src
 
 
-def get_src_for_one_section(link):
-    """Accepts links to product from the catalog
-     as an argument and returns links to images"""
-    html = get_url(link).text
-    src = catalog(html, 'a', 'img', 'src', 'https://gastronomia.by', class_="thumb shine", )
-    return src
-
-
-def saver(all_products_from_the_catalog):
+def saver(all_links_from_the_catalog, address):
     """Creates directory name, filenames,
      and writes data to the appropriate directories"""
     total = 0
-    for link in all_products_from_the_catalog:
-        src_for_pictures = get_src_for_one_section(link)
-        directory_name = name_for_directory(link)
-        creating_directories(directory_name)
+    for link in all_links_from_the_catalog:
+        src_for_pictures = get_src(link)
+        directory_name = get_name_directory(link)
+        directory_creation(directory_name)
         for every_src in src_for_pictures:
-            response = get_url(every_src)
-            file_name = file_name_creation(every_src)
+            if every_src.split('/')[-2] == 'gastronomia.bydata:image':
+                continue
+            full_links_for_src = address + every_src
+            response = get_url(full_links_for_src)
+            file_name = get_file_name(every_src)
             time.sleep(random.random())
             with open(directory_name + '/' + file_name, 'wb') as file:
                 file.write(response.content)
         total += 1
     return total
-
